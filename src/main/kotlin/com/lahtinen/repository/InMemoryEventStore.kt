@@ -11,6 +11,9 @@ class InMemoryEventStore : EventStore {
         if (!events.all { it.aggregateId == aggregateId }) {
             throw IllegalArgumentException("Cannot save events of from different aggregates")
         }
+        if ((eventsByAggregateId[aggregateId]?.size ?: 0) != version) {
+            throw IllegalStateException("Changes have occurred since aggregate was read")
+        }
 
         eventsByAggregateId[aggregateId] = eventsByAggregateId.getOrDefault(aggregateId, listOf()).plus(events)
     }
