@@ -4,6 +4,6 @@ import com.lahtinen.domain.Event
 import java.util.UUID
 
 interface EventStore {
-    fun save(aggregateId: UUID, events: List<Event>, version: Int)
-    fun getByAggregateId(aggregateId: UUID): List<Event>
+    fun saveEvents(type: String, id: UUID, events: List<Event>, version: Int)
+    fun getEventsById(type: String, id: UUID): List<Event>
 }

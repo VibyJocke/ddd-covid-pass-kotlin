@@ -3,16 +3,18 @@ package com.lahtinen.domain
 import java.time.LocalDateTime
 import java.util.UUID
 
-class Patient private constructor(private val id: UUID) : AggregateRoot<Patient>(id) {
+class Patient private constructor(private val id: UUID) : AggregateRoot(AGGREGATE_TYPE_NAME, id) {
     private val vaccinations = mutableListOf<Vaccination>()
 
     companion object {
+        const val AGGREGATE_TYPE_NAME = "Patient"
+
         fun registerNew(nin: String): Patient {
             return Patient(UUID.randomUUID()).apply { registerNew(nin) }
         }
 
         fun fromHistory(patientId: UUID, events: List<Event>): Patient {
-            return Patient(patientId).applyEvents(events)
+            return Patient(patientId).apply { applyEvents(events) }
         }
     }
 

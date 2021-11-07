@@ -4,14 +4,13 @@ import com.lahtinen.domain.AggregateRoot
 import com.lahtinen.domain.Patient
 import java.util.UUID
 
-// TODO: make proper abstractions and applyEvents return the aggregate itself
-class AggregateRepository<T : AggregateRoot<Patient>>(private val eventStore: EventStore) {
+class AggregateRepository<T : AggregateRoot>(private val eventStore: EventStore) {
     fun save(aggregate: T) {
-        eventStore.save(aggregate.aggregateId, aggregate.uncommittedEvents, aggregate.committedVersion)
+        eventStore.saveEvents(aggregate.type, aggregate.aggregateId, aggregate.uncommittedEvents, aggregate.committedVersion)
     }
 
     fun getPatient(aggregateId: UUID): Patient? {
-        return eventStore.getByAggregateId(aggregateId)
+        return eventStore.getEventsById(Patient.AGGREGATE_TYPE_NAME, aggregateId)
             .let { if (it.isEmpty()) null else Patient.fromHistory(aggregateId, it) }
     }
 }
