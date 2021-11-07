@@ -1,10 +1,13 @@
 package com.lahtinen.domain
 
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.util.UUID
 
 class Patient private constructor(private val id: UUID) : AggregateRoot(AGGREGATE_TYPE_NAME, id) {
+    private val log = LoggerFactory.getLogger(javaClass)
     private val vaccinations = mutableListOf<Vaccination>()
+    private var nin = ""
 
     companion object {
         const val AGGREGATE_TYPE_NAME = "Patient"
@@ -19,15 +22,21 @@ class Patient private constructor(private val id: UUID) : AggregateRoot(AGGREGAT
     }
 
     private fun registerNew(nin: String) {
-        applyNew(PatientRegistered(id, nin, LocalDateTime.now()))
+        applyNew(PatientRegistered(id, LocalDateTime.now(), nin))
     }
 
     // Event handlers below
 
     override fun apply(event: Event) {
         when (event) {
+            is PatientRegistered -> onRegistered(event)
             is PatientVaccinated -> onVaccinated(event)
+            else -> log.warn("Event of type '${event::class.simpleName}' not supported.")
         }
+    }
+
+    private fun onRegistered(event: PatientRegistered) {
+        nin = event.nin
     }
 
     private fun onVaccinated(event: PatientVaccinated) {
