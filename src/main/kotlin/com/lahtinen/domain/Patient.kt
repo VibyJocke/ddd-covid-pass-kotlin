@@ -3,7 +3,7 @@ package com.lahtinen.domain
 import java.time.LocalDateTime
 import java.util.UUID
 
-class Patient private constructor (private val id: UUID) : AggregateRoot<Patient>(id) {
+class Patient private constructor(private val id: UUID) : AggregateRoot<Patient>(id) {
     private val vaccinations = mutableListOf<Vaccination>()
 
     companion object {
