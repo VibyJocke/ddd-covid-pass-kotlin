@@ -1,4 +1,4 @@
-package com.lahtinen.port.rest
+package com.lahtinen.port.rest.gson
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer

@@ -1,3 +1,5 @@
 package com.lahtinen.port.rest.dto
 
-data class RegisterPatientRequest(val patientNin: String)
+import com.lahtinen.domain.PersonalNumber
+
+data class RegisterPatientRequest(val patientNin: PersonalNumber)
