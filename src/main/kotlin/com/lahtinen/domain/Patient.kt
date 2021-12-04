@@ -2,27 +2,32 @@ package com.lahtinen.domain
 
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
-import java.util.UUID
 
-class Patient private constructor(private val id: UUID) : AggregateRoot(AGGREGATE_TYPE_NAME, id) {
+class Patient private constructor(personalNumber: PersonalNumber) :
+    AggregateRoot(AGGREGATE_TYPE_NAME, personalNumber.value) {
     private val log = LoggerFactory.getLogger(javaClass)
     private val vaccinations = mutableListOf<Vaccination>()
-    private var nin = ""
+    private var name = ""
 
     companion object {
         const val AGGREGATE_TYPE_NAME = "Patient"
 
-        fun registerNew(nin: String): Patient {
-            return Patient(UUID.randomUUID()).apply { registerNew(nin) }
+        fun registerNew(personalNumber: PersonalNumber, name: String): Patient {
+            return Patient(personalNumber).apply { registerNew(personalNumber, name) }
         }
 
-        fun fromHistory(patientId: UUID, events: List<Event>): Patient {
-            return Patient(patientId).apply { applyEvents(events) }
+        fun fromHistory(personalNumber: PersonalNumber, events: List<Event>): Patient {
+            return Patient(personalNumber).apply { applyEvents(events) }
         }
     }
 
-    private fun registerNew(nin: String) {
-        applyNew(PatientRegistered(id, LocalDateTime.now(), nin))
+    private fun registerNew(personalNumber: PersonalNumber, name: String) {
+        applyNew(PatientRegistered(personalNumber, LocalDateTime.now(), name))
+    }
+
+    fun reportVaccinated(personalNumber: PersonalNumber, injectionDate: LocalDateTime, vaccineType: String): Patient {
+        applyNew(PatientVaccinated(personalNumber, injectionDate, vaccineType))
+        return this
     }
 
     // Event handlers below
@@ -36,10 +41,10 @@ class Patient private constructor(private val id: UUID) : AggregateRoot(AGGREGAT
     }
 
     private fun onRegistered(event: PatientRegistered) {
-        nin = event.nin
+        name = event.name
     }
 
     private fun onVaccinated(event: PatientVaccinated) {
-        vaccinations.add(Vaccination(event.date, event.location, event.doctorName))
+        vaccinations.add(Vaccination(event.date, event.vaccineType))
     }
 }

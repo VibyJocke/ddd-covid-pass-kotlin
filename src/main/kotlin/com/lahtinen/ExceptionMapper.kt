@@ -6,7 +6,6 @@ import io.ktor.application.install
 import io.ktor.features.StatusPages
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import java.lang.IllegalArgumentException
 
 fun Application.configureExceptionMapper() {
     install(StatusPages) {

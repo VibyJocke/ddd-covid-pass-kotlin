@@ -1,8 +1,6 @@
 package com.lahtinen.domain
 
-import java.util.UUID
-
-abstract class AggregateRoot(val type: String, val aggregateId: UUID) {
+abstract class AggregateRoot(val type: String, val aggregateId: String) {
     val uncommittedEvents = mutableListOf<Event>()
     var committedVersion = 0 // TODO: use something more robust instead of assuming version == numberOfEvents
 

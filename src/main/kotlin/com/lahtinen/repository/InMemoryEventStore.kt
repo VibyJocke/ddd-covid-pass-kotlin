@@ -1,16 +1,15 @@
 package com.lahtinen.repository
 
 import com.lahtinen.domain.Event
-import java.util.UUID
 
 // TODO: Implement simple atomicity/thread safety
 class InMemoryEventStore : EventStore {
     private val eventsByAggregateId = mutableMapOf<CompositeKey, List<Event>>()
 
-    override fun getEventsById(type: String, id: UUID) =
+    override fun getEventsById(type: String, id: String) =
         eventsByAggregateId.getOrDefault(CompositeKey(type, id), listOf())
 
-    override fun saveEvents(type: String, id: UUID, events: List<Event>, version: Int) {
+    override fun saveEvents(type: String, id: String, events: List<Event>, version: Int) {
         val key = CompositeKey(type, id)
         validateAllEventsAreOfTheSameAggregate(events, id)
         validatePersistedVersionMatchesLastReadVersion(key, version)
@@ -23,13 +22,13 @@ class InMemoryEventStore : EventStore {
         }
     }
 
-    private fun validateAllEventsAreOfTheSameAggregate(events: List<Event>, id: UUID) {
+    private fun validateAllEventsAreOfTheSameAggregate(events: List<Event>, id: String) {
         if (events.allSameAggregateAs(id)) {
             throw IllegalArgumentException("Cannot save events of from different aggregates")
         }
     }
 
-    private fun List<Event>.allSameAggregateAs(id: UUID) = !this.all { it.aggregateId == id }
+    private fun List<Event>.allSameAggregateAs(id: String) = !this.all { it.aggregateId == id }
 
-    data class CompositeKey(val type: String, val id: UUID)
+    data class CompositeKey(val type: String, val id: String)
 }
