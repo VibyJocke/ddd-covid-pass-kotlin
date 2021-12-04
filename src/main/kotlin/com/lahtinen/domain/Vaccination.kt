@@ -11,7 +11,7 @@ enum class ApprovedVaccines(val manufacturer: String, val type: String) {
 
 data class Vaccination(val date: LocalDateTime, val vaccineType: String) {
     init {
-        ApprovedVaccines.values().find { it.type == vaccineType }
+        ApprovedVaccines.values().find { it.type.contentEquals(vaccineType, ignoreCase = true) }
             ?: throw IllegalArgumentException("Non-approved vaccine")
     }
 }
