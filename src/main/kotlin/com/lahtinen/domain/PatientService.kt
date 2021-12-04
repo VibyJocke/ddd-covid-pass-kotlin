@@ -7,8 +7,12 @@ class PatientService {
     private val patientRepository = AggregateRepository<Patient>(InMemoryEventStore())
 
     fun registerPatient(command: RegisterPatient) {
-        Patient.registerNew(command.personalNumber, command.name)
-            .apply { patientRepository.save(this) }
+        try {
+            Patient.registerNew(command.personalNumber, command.name)
+                .apply { patientRepository.save(this) }
+        } catch (e: IllegalStateException) {
+            throw IllegalArgumentException("Patient already exists")
+        }
     }
 
     fun reportPatientVaccinated(command: ReportPatientVaccinated) {
